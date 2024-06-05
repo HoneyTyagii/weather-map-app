@@ -4,29 +4,38 @@ import axios from 'axios';
 
 const WeatherDisplay = ({ lat, lon }) => {
   const [weatherData, setWeatherData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const apiKey = process.env.REACT_APP_OPENWEATHERMAP_API_KEY;
 
   useEffect(() => {
-    if (lat && lon) {
-      const fetchWeather = async () => {
-        try {
-          const response = await axios.get(
-            `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`
-          );
-          setWeatherData(response.data);
-        } catch (error) {
-          console.error("Error fetching weather data:", error);
-        }
-      };
-      fetchWeather();
-    }
+    const fetchWeather = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`
+        );
+        setWeatherData(response.data);
+        setError(null);
+      } catch (err) {
+        setError('Error fetching weather data.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWeather();
   }, [lat, lon, apiKey]);
 
-  if (!weatherData) return <div>Loading...</div>;
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   const { temp, humidity } = weatherData.main;
   const { speed: windSpeed } = weatherData.wind;
   const { description, icon } = weatherData.weather[0];
+
+  const iconUrl = `http://openweathermap.org/img/wn/${icon}@2x.png`;
 
   return (
     <div>
@@ -35,7 +44,7 @@ const WeatherDisplay = ({ lat, lon }) => {
       <p>Condition: {description}</p>
       <p>Humidity: {humidity}%</p>
       <p>Wind Speed: {windSpeed} m/s</p>
-      <img src={`http://openweathermap.org/img/wn/${icon}@2x.png`} alt="weather icon" />
+      <img src={iconUrl} alt="weather icon" />
     </div>
   );
 };
