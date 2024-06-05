@@ -4,17 +4,23 @@ import axios from 'axios';
 
 const WeatherDisplay = ({ lat, lon }) => {
   const [weatherData, setWeatherData] = useState(null);
+  const apiKey = process.env.REACT_APP_OPENWEATHERMAP_API_KEY;
 
   useEffect(() => {
     if (lat && lon) {
       const fetchWeather = async () => {
-        const apiKey = '9b8f8950683aaab57eb7bc51d81d201c';
-        const response = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`);
-        setWeatherData(response.data);
+        try {
+          const response = await axios.get(
+            `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`
+          );
+          setWeatherData(response.data);
+        } catch (error) {
+          console.error("Error fetching weather data:", error);
+        }
       };
       fetchWeather();
     }
-  }, [lat, lon]);
+  }, [lat, lon, apiKey]);
 
   if (!weatherData) return <div>Loading...</div>;
 
