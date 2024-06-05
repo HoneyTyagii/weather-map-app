@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import axios from 'axios';
 
 interface WeatherProps {
@@ -25,19 +24,26 @@ const WeatherDisplay: React.FC<WeatherProps> = ({ lat, lon }) => {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const apiKey = process.env.REACT_APP_OPENWEATHERMAP_API_KEY as string;
+  const apiKey = process.env.REACT_APP_OPENWEATHERMAP_API_KEY;
 
   useEffect(() => {
     const fetchWeather = async () => {
       setLoading(true);
+      setError(null);
+
+      if (!apiKey) {
+        setError("API key is missing.");
+        setLoading(false);
+        return;
+      }
+
       try {
         const response = await axios.get(
           `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`
         );
         setWeatherData(response.data);
-        setError(null);
       } catch (err) {
-        setError('Error fetching weather data.');
+        setError("Failed to fetch weather data. Please check your API key and the entered coordinates.");
         console.error(err);
       } finally {
         setLoading(false);
@@ -66,11 +72,6 @@ const WeatherDisplay: React.FC<WeatherProps> = ({ lat, lon }) => {
       <img src={iconUrl} alt="weather icon" />
     </div>
   );
-};
-
-WeatherDisplay.propTypes = {
-  lat: PropTypes.number.isRequired,
-  lon: PropTypes.number.isRequired,
 };
 
 export default WeatherDisplay;

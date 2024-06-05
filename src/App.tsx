@@ -6,17 +6,29 @@ import './App.css';
 const App: React.FC = () => {
   const [lat, setLat] = useState<number>(51.505);
   const [lon, setLon] = useState<number>(-0.09);
+  const [inputLat, setInputLat] = useState<string>(lat.toString());
+  const [inputLon, setInputLon] = useState<string>(lon.toString());
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    setLat(parseFloat(formData.get('latitude') as string));
-    setLon(parseFloat(formData.get('longitude') as string));
+
+    const latitude = parseFloat(inputLat);
+    const longitude = parseFloat(inputLon);
+
+    if (isNaN(latitude) || isNaN(longitude)) {
+      alert("Please enter valid values for latitude and longitude.");
+      return;
+    }
+
+    setLat(latitude);
+    setLon(longitude);
   };
 
   const handleMapClick = (lat: number, lon: number) => {
     setLat(lat);
     setLon(lon);
+    setInputLat(lat.toString());
+    setInputLon(lon.toString());
   };
 
   return (
@@ -24,11 +36,23 @@ const App: React.FC = () => {
       <form onSubmit={handleFormSubmit}>
         <label>
           Latitude:
-          <input type="number" name="latitude" defaultValue={lat} required />
+          <input 
+            type="text" 
+            name="latitude" 
+            value={inputLat} 
+            onChange={(e) => setInputLat(e.target.value)} 
+            required 
+          />
         </label>
         <label>
           Longitude:
-          <input type="number" name="longitude" defaultValue={lon} required />
+          <input 
+            type="text" 
+            name="longitude" 
+            value={inputLon} 
+            onChange={(e) => setInputLon(e.target.value)} 
+            required 
+          />
         </label>
         <button type="submit">Get Weather</button>
       </form>
