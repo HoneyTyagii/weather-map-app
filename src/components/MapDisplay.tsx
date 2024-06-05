@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
-import PropTypes from 'prop-types';
 
-const MapDisplay = ({ lat, lon, zoom, onMapClick }) => {
-  const [markerPosition, setMarkerPosition] = useState([lat, lon]);
+interface MapDisplayProps {
+  lat: number;
+  lon: number;
+  zoom?: number;
+  onMapClick: (lat: number, lon: number) => void;
+}
+
+const MapDisplay: React.FC<MapDisplayProps> = ({ lat, lon, zoom = 13, onMapClick }) => {
+  const [markerPosition, setMarkerPosition] = useState<[number, number]>([lat, lon]);
 
   const MapEvents = () => {
     useMapEvents({
@@ -25,17 +31,6 @@ const MapDisplay = ({ lat, lon, zoom, onMapClick }) => {
       <MapEvents />
     </MapContainer>
   );
-};
-
-MapDisplay.propTypes = {
-  lat: PropTypes.number.isRequired,
-  lon: PropTypes.number.isRequired,
-  zoom: PropTypes.number,
-  onMapClick: PropTypes.func.isRequired,
-};
-
-MapDisplay.defaultProps = {
-  zoom: 13,
 };
 
 export default MapDisplay;

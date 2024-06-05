@@ -3,18 +3,18 @@ import WeatherDisplay from './components/WeatherDisplay';
 import MapDisplay from './components/MapDisplay';
 import './App.css';
 
-const App = () => {
-  const [lat, setLat] = useState(51.505);
-  const [lon, setLon] = useState(-0.09);
+const App: React.FC = () => {
+  const [lat, setLat] = useState<number>(51.505);
+  const [lon, setLon] = useState<number>(-0.09);
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    setLat(parseFloat(formData.get('latitude')));
-    setLon(parseFloat(formData.get('longitude')));
+    const formData = new FormData(e.target as HTMLFormElement);
+    setLat(parseFloat(formData.get('latitude') as string));
+    setLon(parseFloat(formData.get('longitude') as string));
   };
 
-  const handleMapClick = (lat, lon) => {
+  const handleMapClick = (lat: number, lon: number) => {
     setLat(lat);
     setLon(lon);
   };

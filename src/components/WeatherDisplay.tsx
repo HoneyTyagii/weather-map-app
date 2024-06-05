@@ -2,11 +2,30 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 
-const WeatherDisplay = ({ lat, lon }) => {
-  const [weatherData, setWeatherData] = useState(null);
+interface WeatherProps {
+  lat: number;
+  lon: number;
+}
+
+interface WeatherData {
+  main: {
+    temp: number;
+    humidity: number;
+  };
+  wind: {
+    speed: number;
+  };
+  weather: {
+    description: string;
+    icon: string;
+  }[];
+}
+
+const WeatherDisplay: React.FC<WeatherProps> = ({ lat, lon }) => {
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const apiKey = process.env.REACT_APP_OPENWEATHERMAP_API_KEY;
+  const [error, setError] = useState<string | null>(null);
+  const apiKey = process.env.REACT_APP_OPENWEATHERMAP_API_KEY as string;
 
   useEffect(() => {
     const fetchWeather = async () => {
@@ -31,9 +50,9 @@ const WeatherDisplay = ({ lat, lon }) => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
-  const { temp, humidity } = weatherData.main;
-  const { speed: windSpeed } = weatherData.wind;
-  const { description, icon } = weatherData.weather[0];
+  const { temp, humidity } = weatherData!.main;
+  const { speed: windSpeed } = weatherData!.wind;
+  const { description, icon } = weatherData!.weather[0];
 
   const iconUrl = `http://openweathermap.org/img/wn/${icon}@2x.png`;
 
